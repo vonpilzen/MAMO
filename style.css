@@ -1,11 +1,56 @@
-:root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; }
-body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; }
-header { padding: 20px; background: #161b22; border-bottom: 1px solid #30363d; text-align: center; }
-.unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 20px; }
-.card { background: var(--card); border: 1px solid #30363d; border-radius: 8px; padding: 15px; cursor: pointer; transition: 0.3s; }
-.card:hover { border-color: var(--accent); transform: translateY(-3px); }
-.flag { width: 25px; vertical-align: middle; margin-right: 10px; border-radius: 2px; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-.modal-content { background: var(--card); margin: 5% auto; width: 80%; max-width: 800px; padding: 25px; border-radius: 12px; }
-.wiki-img { width: 100%; max-height: 300px; object-fit: contain; background: #000; border-radius: 8px; }
-.obs-box { width: 100%; background: #0d1117; color: white; border: 1px solid #30363d; padding: 10px; margin-top: 15px; }
+:root {
+    --primary: #1a1c23;
+    --accent: #4f46e5;
+    --text: #e2e8f0;
+    --card-bg: #2d3748;
+}
+
+body {
+    background: var(--primary);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+header {
+    background: #111827;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--accent);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: 0.3s;
+    cursor: pointer;
+    border: 1px solid #4a5568;
+}
+
+.card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+.type-tag { font-size: 0.7rem; background: var(--accent); padding: 2px 8px; border-radius: 20px; }
+
+/* Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; }
+.modal-content { background: var(--card-bg); margin: 5% auto; width: 90%; max-width: 800px; padding: 2rem; border-radius: 15px; max-height: 85vh; overflow-y: auto; }
+
+.wiki-content { display: flex; gap: 1.5rem; margin: 1.5rem 0; align-items: flex-start; }
+.wiki-img { width: 200px; border-radius: 8px; }
+
+.sys-list { list-style: none; padding: 0; font-size: 0.9rem; }
+.sys-list li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.wiki-link { color: var(--accent); text-decoration: none; }
+
+.obs-section textarea { width: 100%; background: #1a1c23; color: white; border: 1px solid #4a5568; border-radius: 8px; padding: 10px; margin: 10px 0; }
+.btn-primary, .btn-save { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
