@@ -2,43 +2,43 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intel Center - DBMil Viewer</title>
+    <title>MIL-INTEL Viewer</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <i class="fas fa-shield-halved"></i>
-            <h1>DBMil Viewer</h1>
-        </div>
-        <div class="search-container">
-            <input type="text" id="main-search" placeholder="Buscar unidad, país o tipo...">
-            <select id="category-filter">
-                <option value="all">Todas las categorías</option>
-                <option value="Aviation">Aviación</option>
-                <option value="Surface">Buques</option>
-                <option value="Subsurface">Submarinos</option>
-                <option value="Land">Tierra / SAM</option>
-            </select>
-        </div>
-    </header>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">INTEL CENTER</div>
+            <div class="filter-group">
+                <label>Búsqueda Rápida</label>
+                <input type="text" id="search" placeholder="Nombre de unidad...">
+            </div>
+            <div class="filter-group">
+                <label>Filtrar por País</label>
+                <select id="country-filter">
+                    <option value="all">Todos los Países</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filtrar por Tipo</label>
+                <select id="type-filter">
+                    <option value="all">Todos los Tipos</option>
+                </select>
+            </div>
+        </aside>
 
-    <main>
-        <div id="results-grid" class="grid"></div>
-        <div class="load-more-container">
-            <button id="load-more" class="btn-primary" style="display: none;">Cargar más unidades</button>
-        </div>
-    </main>
+        <main class="content">
+            <div id="grid" class="grid"></div>
+        </main>
+    </div>
 
     <div id="modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
+            <span class="close">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
