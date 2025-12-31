@@ -1,56 +1,26 @@
 :root {
-    --primary: #1a1c23;
-    --accent: #4f46e5;
-    --text: #e2e8f0;
-    --card-bg: #2d3748;
+    --bg: #0b0e14;
+    --side: #161b22;
+    --accent: #58a6ff;
+    --text: #c9d1d9;
 }
 
-body {
-    background: var(--primary);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-}
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; }
+.dashboard { display: flex; height: 100vh; }
+.sidebar { width: 280px; background: var(--side); padding: 20px; border-right: 1px solid #30363d; }
+.filter-group { margin-bottom: 20px; }
+.sidebar label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--accent); }
+.sidebar input, .sidebar select { width: 100%; background: #0d1117; border: 1px solid #30363d; color: white; padding: 8px; border-radius: 5px; }
 
-header {
-    background: #111827;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--accent);
-}
+.grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; }
+.card { background: var(--side); border: 1px solid #30363d; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.2s; }
+.card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.flag { width: 25px; border-radius: 2px; }
+.type-tag { font-size: 0.7rem; background: #238636; padding: 2px 6px; border-radius: 10px; float: right; }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 2rem;
-}
-
-.card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: 0.3s;
-    cursor: pointer;
-    border: 1px solid #4a5568;
-}
-
-.card:hover { transform: translateY(-5px); border-color: var(--accent); }
-
-.type-tag { font-size: 0.7rem; background: var(--accent); padding: 2px 8px; border-radius: 20px; }
-
-/* Modal */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; }
-.modal-content { background: var(--card-bg); margin: 5% auto; width: 90%; max-width: 800px; padding: 2rem; border-radius: 15px; max-height: 85vh; overflow-y: auto; }
-
-.wiki-content { display: flex; gap: 1.5rem; margin: 1.5rem 0; align-items: flex-start; }
-.wiki-img { width: 200px; border-radius: 8px; }
-
-.sys-list { list-style: none; padding: 0; font-size: 0.9rem; }
-.sys-list li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
-.wiki-link { color: var(--accent); text-decoration: none; }
-
-.obs-section textarea { width: 100%; background: #1a1c23; color: white; border: 1px solid #4a5568; border-radius: 8px; padding: 10px; margin: 10px 0; }
-.btn-primary, .btn-save { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+.modal-content { background: var(--side); margin: 5% auto; width: 80%; max-width: 900px; padding: 30px; border-radius: 10px; position: relative; }
+.close { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+.wiki-img { width: 100%; border-radius: 8px; border: 1px solid var(--accent); }
+textarea { width: 100%; background: #0b0e14; color: white; border: 1px solid #30363d; padding: 10px; border-radius: 5px; }
