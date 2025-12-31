@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // URL de tu Google Sheet (Publicada como CSV)
-    const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQiL3VatqWa2CxufA4Uwao6USiCysIDOE7pCH_MK8X-0HgB_aRKEFiYtiqkja0Ay8C0aVCffKyRYtO_/pub?output=csv';
+    const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxBNfc5-Gfgq-UwWvjp7bXD681uOfhQLtn9BUj7K2E220dNIGq74ccVKBQXsbUNuys9HG5yDU4Tols/pub?output=csv';
 
     let allData = [];
     let itemsToShow = 24;
