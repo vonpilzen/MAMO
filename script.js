@@ -1,141 +1,121 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxBNfc5-Gfgq-UwWvjp7bXD681uOfhQLtn9BUj7K2E220dNIGq74ccVKBQXsbUNuys9HG5yDU4Tols/pub?output=csv';
-    
+    // URL de tu Google Sheet (Publicada como CSV)
+    const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQiL3VatqWa2CxufA4Uwao6USiCysIDOE7pCH_MK8X-0HgB_aRKEFiYtiqkja0Ay8C0aVCffKyRYtO_/pub?output=csv';
+
     let allData = [];
-    let filteredData = [];
-    let itemsToShow = 20;
+    let itemsToShow = 24;
 
-    const grid = document.getElementById('results-grid');
-    const loadMoreBtn = document.getElementById('load-more');
-    const searchInput = document.getElementById('main-search');
-    const filterSelect = document.getElementById('category-filter');
-    const modal = document.getElementById('modal');
-    const modalBody = document.getElementById('modal-body');
+    // Mapa de banderas (puedes ampliarlo)
+    const flagCodes = { "afghanistan": "af", "argentina": "ar", "usa": "us", "russia": "ru", "spain": "es", "uk": "gb", "yugoslavia": "rs" };
 
-    // 1. Cargar Datos
-    async function fetchData() {
-        try {
-            const response = await fetch(SPREADSHEET_URL);
-            const csvText = await response.text();
-            allData = parseCSV(csvText);
-            filteredData = [...allData];
-            renderGrid();
-        } catch (error) {
-            console.error("Error cargando DB:", error);
-        }
+    async function init() {
+        const response = await fetch(SPREADSHEET_URL);
+        const csvText = await response.text();
+        allData = parseCSV(csvText);
+        
+        populateSelectors();
+        renderGrid();
     }
 
+    // Parser robusto que ignora comas dentro de comillas
     function parseCSV(text) {
         const lines = text.trim().split('\n');
         const headers = lines[0].split(',').map(h => h.trim());
         return lines.slice(1).map(line => {
             const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
             let obj = {};
-            headers.forEach((h, i) => obj[h] = values ? values[i]?.replace(/"/g, '').trim() : '');
+            headers.forEach((h, i) => {
+                let val = values ? values[i]?.replace(/"/g, '').trim() : '';
+                obj[h] = val;
+            });
+            // Limpieza extra
+            obj.CleanName = obj.Name?.split(' - ')[0].replace(/_.*_/g, '').trim();
+            obj.Country = obj.Country?.replace(/_.*_/g, '').trim();
             return obj;
         });
     }
 
-    // 2. Renderizado con Límite (Carga Progresiva)
-    function renderGrid(append = false) {
-        const chunk = filteredData.slice(0, itemsToShow);
-        
-        grid.innerHTML = chunk.map(unit => `
-            <div class="card" onclick="openDetails('${unit.ID}')">
-                <div class="card-header">
-                    <img src="https://flagcdn.com/w40/${getFlagCode(unit.Country)}.png" class="flag" alt="${unit.Country}">
-                    <span class="type-tag">${unit.Type || 'Unit'}</span>
-                </div>
-                <h3>${unit.Clean_Name || unit.Name}</h3>
-                <p class="year-tag">${unit.Year || ''}</p>
-            </div>
-        `).join('');
+    function populateSelectors() {
+        const countries = [...new Set(allData.map(u => u.Country))].sort();
+        const types = [...new Set(allData.map(u => u.Type))].sort();
 
-        loadMoreBtn.style.display = itemsToShow < filteredData.length ? 'block' : 'none';
+        const countrySelect = document.getElementById('country-filter');
+        const typeSelect = document.getElementById('type-filter');
+
+        countries.forEach(c => countrySelect.innerHTML += `<option value="${c}">${c}</option>`);
+        types.forEach(t => typeSelect.innerHTML += `<option value="${t}">${t}</option>`);
     }
 
-    // 3. Detalles y Wikipedia
-    window.openDetails = async (id) => {
-        const unit = allData.find(u => u.ID === id);
-        const savedObs = localStorage.getItem(`obs-${id}`) || "";
-        
-        modalBody.innerHTML = `
-            <div class="modal-header">
-                <h2>${unit.Clean_Name || unit.Name}</h2>
-                <img src="https://flagcdn.com/w80/${getFlagCode(unit.Country)}.png" class="modal-flag">
-            </div>
-            <div id="wiki-info" class="wiki-container">Buscando en Wikipedia...</div>
-            
-            <div class="systems-grid">
-                <div>
-                    <h4><i class="fas fa-microchip"></i> Sensores</h4>
-                    <ul class="sys-list">${renderSystems(unit.Sensors)}</ul>
-                </div>
-                <div>
-                    <h4><i class="fas fa-bomb"></i> Armamento</h4>
-                    <ul class="sys-list">${renderSystems(unit.Weapons)}</ul>
-                </div>
-            </div>
+    function renderGrid() {
+        const grid = document.getElementById('grid');
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const countryTerm = document.getElementById('country-filter').value;
+        const typeTerm = document.getElementById('type-filter').value;
 
-            <div class="obs-section">
-                <h4><i class="fas fa-pen"></i> Observaciones</h4>
-                <textarea id="obs-input" placeholder="Añadir notas tácticas...">${savedObs}</textarea>
-                <button class="btn-save" onclick="saveObservation('${id}')">Guardar</button>
+        const filtered = allData.filter(u => {
+            const matchText = u.CleanName.toLowerCase().includes(searchTerm);
+            const matchCountry = countryTerm === 'all' || u.Country === countryTerm;
+            const matchType = typeTerm === 'all' || u.Type === typeTerm;
+            return matchText && matchCountry && matchType;
+        });
+
+        grid.innerHTML = filtered.slice(0, itemsToShow).map(u => `
+            <div class="card" onclick="openDetails('${u.ID}')">
+                <div class="card-head">
+                    <img src="https://flagcdn.com/w40/${flagCodes[u.Country.toLowerCase()] || 'un'}.png" class="flag">
+                    <span class="type-tag">${u.Type}</span>
+                </div>
+                <h3>${u.CleanName}</h3>
+                <p>${u.Country}</p>
+            </div>
+        `).join('');
+    }
+
+    // Función para Wikipedia y Detalles
+    window.openDetails = async (id) => {
+        const unit = allData.find(u => u.ID == id);
+        const modal = document.getElementById('modal');
+        const content = document.getElementById('modal-body');
+        
+        modal.style.display = 'block';
+        content.innerHTML = `<h2>Cargando Inteligencia...</h2>`;
+
+        const wikiRes = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(unit.CleanName)}`);
+        const wiki = await wikiRes.json();
+
+        content.innerHTML = `
+            <div class="modal-grid">
+                <div class="wiki-info">
+                    ${wiki.thumbnail ? `<img src="${wiki.thumbnail.source}" class="wiki-img">` : ''}
+                    <p>${wiki.extract || 'No se encontró descripción detallada.'}</p>
+                </div>
+                <div class="tech-data">
+                    <h2>${unit.CleanName}</h2>
+                    <p><strong>País:</strong> ${unit.Country}</p>
+                    <div class="systems">
+                        <h4>Sistemas (Links a Wikipedia)</h4>
+                        <ul>${renderSystems(unit.Sensors)}</ul>
+                    </div>
+                    <h4>Notas Personales</h4>
+                    <textarea id="note-${id}" onchange="localStorage.setItem('note-${id}', this.value)">${localStorage.getItem('note-'+id) || ''}</textarea>
+                </div>
             </div>
         `;
-        modal.style.display = 'block';
-        fetchWiki(unit.Clean_Name || unit.Name);
     };
 
     function renderSystems(text) {
-        if (!text || text === "N/A") return "<li>No disponible</li>";
-        return text.split('|').map(sys => {
-            const name = sys.trim();
-            return `<li>${name} <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" class="wiki-link"><i class="fab fa-wikipedia-w"></i></a></li>`;
+        if(!text || text === "N/A") return "<li>No disponible</li>";
+        return text.split('|').map(s => {
+            const name = s.trim().split('-')[0];
+            return `<li>${s.trim()} <a href="https://es.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank"><i class="fab fa-wikipedia-w"></i></a></li>`;
         }).join('');
     }
 
-    async function fetchWiki(query) {
-        const container = document.getElementById('wiki-info');
-        try {
-            const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
-            const data = await res.json();
-            if (data.extract) {
-                container.innerHTML = `
-                    <div class="wiki-content">
-                        ${data.thumbnail ? `<img src="${data.thumbnail.source}" class="wiki-img">` : ''}
-                        <p>${data.extract}</p>
-                    </div>
-                `;
-            } else { container.innerHTML = "Sin datos en Wikipedia."; }
-        } catch { container.innerHTML = "Error cargando Wikipedia."; }
-    }
+    // Eventos
+    document.getElementById('search').oninput = renderGrid;
+    document.getElementById('country-filter').onchange = renderGrid;
+    document.getElementById('type-filter').onchange = renderGrid;
+    document.querySelector('.close').onclick = () => document.getElementById('modal').style.display = 'none';
 
-    // 4. Utilidades
-    window.saveObservation = (id) => {
-        const val = document.getElementById('obs-input').value;
-        localStorage.setItem(`obs-${id}`, val);
-        alert("Observación guardada localmente.");
-    };
-
-    function getFlagCode(country) {
-        const codes = { "Afghanistan": "af", "Argentina": "ar", "USA": "us", "Russia": "ru", "Spain": "es", "UK": "gb" };
-        return codes[country] || "un";
-    }
-
-    // 5. Eventos
-    loadMoreBtn.onclick = () => { itemsToShow += 20; renderGrid(); };
-    
-    searchInput.oninput = () => {
-        const val = searchInput.value.toLowerCase();
-        filteredData = allData.filter(u => 
-            (u.Name + u.Country + u.Type).toLowerCase().includes(val)
-        );
-        itemsToShow = 20;
-        renderGrid();
-    };
-
-    document.querySelector('.close-btn').onclick = () => modal.style.display = 'none';
-    
-    fetchData();
+    init();
 });
